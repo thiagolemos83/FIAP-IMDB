@@ -1,62 +1,72 @@
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Josefin+Sans:wght@300;400;500;600;700&display=swap');
 
 :root {
+    /* Base for Dark Mode (Default) */
     --primary-color: #d4af37; /* Magnetic Gold */
     --bg-color: #0c0c0c;
     --card-bg: #1a1a1a;
     --text-main: #ffffff;
     --text-dim: #a0a0a0;
+    --border-color: rgba(212, 175, 55, 0.1);
+    --shadow-color: rgba(0, 0, 0, 0.5);
 }
 
 /* Base Styles */
 .stApp {
     background-color: var(--bg-color);
     font-family: 'Josefin Sans', sans-serif;
+    color: var(--text-main);
 }
 
-h1, h2, h3 {
+h1, h2, h3, h4, h5, h6 {
     font-family: 'Cinzel', serif !important;
     color: var(--primary-color) !important;
-    text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
 }
 
-/* Metric Cards */
-[data-testid="stMetricValue"] {
-    font-family: 'Cinzel', serif;
-    color: var(--primary-color) !important;
-}
-
-[data-testid="stMetricLabel"] {
-    font-family: 'Josefin Sans', sans-serif;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-/* Navigation / Sidebar */
-section[data-testid="stSidebar"] {
-    background-color: var(--card-bg) !important;
-    border-right: 1px solid rgba(212, 175, 55, 0.1);
-}
-
-/* Custom Card Effect */
+/* Custom Metric Cards */
 div.stMetric {
-    background: rgba(255, 255, 255, 0.03);
-    padding: 15px;
-    border-radius: 10px;
-    border: 1px solid rgba(212, 175, 55, 0.1);
-    transition: all 0.3s ease;
-    cursor: pointer;
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 6px var(--shadow-color);
 }
 
 div.stMetric:hover {
-    background: rgba(255, 255, 255, 0.05);
     border-color: var(--primary-color);
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 15px var(--shadow-color);
 }
 
-/* Transitions */
+/* Streamlit Native Elements Overrides */
+[data-testid="stSidebar"] {
+    background-color: var(--card-bg) !important;
+    border-right: 1px solid var(--border-color);
+}
+
+[data-testid="stHeader"] {
+    background-color: rgba(0,0,0,0) !important;
+}
+
+/* Text and Labels */
+p, span, label {
+    color: var(--text-main) !important;
+}
+
+.stMarkdown div p {
+    color: var(--text-dim) !important;
+}
+
+/* Buttons */
 .stButton>button {
+    background-color: var(--card-bg) !important;
+    color: var(--primary-color) !important;
+    border: 1px solid var(--primary-color) !important;
     transition: all 0.2s ease;
-    border-radius: 5px;
+}
+
+.stButton>button:hover {
+    background-color: var(--primary-color) !important;
+    color: var(--bg-color) !important;
 }

@@ -14,21 +14,73 @@ r = redis.StrictRedis(host=REDIS_HOST, port=REDIS_PORT, decode_responses=True)
 COMBUSTIVEIS = ["gasolina_comum", "etanol", "diesel_s10"]
 BAIRROS = ["bela_vista", "pinheiros", "itaim_bibi", "vila_madalena", "moema"]
 
+# Theme Configuration
+if 'theme' not in st.session_state:
+    st.session_state.theme = 'dark'
+
+def toggle_theme():
+    st.session_state.theme = 'light' if st.session_state.theme == 'dark' else 'dark'
+
 # UI Configuration
 st.set_page_config(page_title="Radar de Combustíveis SP", layout="wide", page_icon="⛽")
 
-# Load CSS
+# Dynamic CSS based on theme
+THEMES = {
+    'dark': {
+        'primary': '#d4af37',
+        'bg': '#0c0c0c',
+        'card': '#1a1a1a',
+        'text': '#ffffff',
+        'text_dim': '#a0a0a0',
+        'border': 'rgba(212, 175, 55, 0.1)',
+        'shadow': 'rgba(0, 0, 0, 0.5)'
+    },
+    'light': {
+        'primary': '#b8860b',
+        'bg': '#f8f9fa',
+        'card': '#ffffff',
+        'text': '#1a1a1a',
+        'text_dim': '#6c757d',
+        'border': 'rgba(184, 134, 11, 0.2)',
+        'shadow': 'rgba(0, 0, 0, 0.08)'
+    }
+}
+
+t = THEMES[st.session_state.theme]
+
+# Inject Base CSS
 with open("src/style.css") as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
+# Inject Dynamic Theme Variables
+st.markdown(f"""
+<style>
+    :root {{
+        --primary-color: {t['primary']};
+        --bg-color: {t['bg']};
+        --card-bg: {t['card']};
+        --text-main: {t['text']};
+        --text-dim: {t['text_dim']};
+        --border-color: {t['border']};
+        --shadow-color: {t['shadow']};
+    }}
+</style>
+""", unsafe_allow_html=True)
+
+# Sidebar filters
+st.sidebar.header("CONTROLES")
+theme_icon = "☀️" if st.session_state.theme == 'dark' else "🌙"
+if st.sidebar.button(f"{theme_icon} Alternar Tema"):
+    toggle_theme()
+    st.rerun()
+
+st.sidebar.divider()
+selected_fuel = st.sidebar.selectbox("Combustível", COMBUSTIVEIS)
+selected_bairro = st.sidebar.selectbox("Bairro", BAIRROS)
 
 # Main Title and Subtitle
 st.title("RADAR DE COMBUSTÍVEL")
 st.markdown("##### MONITORAMENTO ESTRATÉGICO EM TEMPO REAL")
-
-# Sidebar filters
-st.sidebar.header("CONTROLES")
-selected_fuel = st.sidebar.selectbox("Combustível", COMBUSTIVEIS)
-selected_bairro = st.sidebar.selectbox("Bairro", BAIRROS)
 
 # Helper to get posto details
 def get_posto_info(posto_id):
@@ -41,13 +93,13 @@ col1, col2, col3 = st.columns(3)
 def custom_card(title, value, subtitle="", icon_svg=""):
     st.markdown(f"""
     <div class="stMetric">
-        <div style="font-family: 'Josefin Sans'; font-size: 0.8rem; color: #a0a0a0; text-transform: uppercase; letter-spacing: 1px;">
+        <div style="font-family: 'Josefin Sans'; font-size: 0.8rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px;">
             {title}
         </div>
-        <div style="font-family: 'Cinzel'; font-size: 1.8rem; color: #d4af37; margin: 5px 0;">
+        <div style="font-family: 'Cinzel'; font-size: 1.8rem; color: var(--primary-color); margin: 5px 0;">
             {value}
         </div>
-        <div style="font-family: 'Josefin Sans'; font-size: 0.9rem; color: #ffffff;">
+        <div style="font-family: 'Josefin Sans'; font-size: 0.9rem; color: var(--text-main);">
             {subtitle}
         </div>
     </div>
@@ -98,17 +150,19 @@ with col_left:
                 "Bandeira": p_info.get("bandeira", "")
             })
         df = pd.DataFrame(data)
+        
+        chart_colors = [t['primary'], t['text_dim'], '#444444', '#888888']
         fig = px.bar(df, x='Preço', y='Posto', color='Bandeira', orientation='h', 
                      text='Preço', height=500,
-                     color_discrete_sequence=['#d4af37', '#a0a0a0', '#ffffff', '#444444'])
+                     color_discrete_sequence=chart_colors)
         
         fig.update_layout(
             paper_bgcolor='rgba(0,0,0,0)',
             plot_bgcolor='rgba(0,0,0,0)',
             font_family="Josefin Sans",
-            font_color="#ffffff",
-            xaxis=dict(showgrid=False, zeroline=False),
-            yaxis={'categoryorder':'total descending', 'showgrid': False},
+            font_color=t['text'],
+            xaxis=dict(showgrid=False, zeroline=False, tickfont=dict(color=t['text_dim'])),
+            yaxis={'categoryorder':'total descending', 'showgrid': False, 'tickfont': dict(color=t['text_dim'])},
             margin=dict(l=20, r=20, t=40, b=20)
         )
         st.plotly_chart(fig, use_container_width=True)
@@ -135,8 +189,5 @@ with col_right:
     st.dataframe(df_activity, hide_index=True, use_container_width=True)
 
 # Auto-refresh
-if st.sidebar.button("Refresh manual"):
-    st.rerun()
-
 time.sleep(2)
 st.rerun()
