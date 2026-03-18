@@ -1,0 +1,62 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Josefin+Sans:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --primary-color: #d4af37; /* Magnetic Gold */
+    --bg-color: #0c0c0c;
+    --card-bg: #1a1a1a;
+    --text-main: #ffffff;
+    --text-dim: #a0a0a0;
+}
+
+/* Base Styles */
+.stApp {
+    background-color: var(--bg-color);
+    font-family: 'Josefin Sans', sans-serif;
+}
+
+h1, h2, h3 {
+    font-family: 'Cinzel', serif !important;
+    color: var(--primary-color) !important;
+    text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+}
+
+/* Metric Cards */
+[data-testid="stMetricValue"] {
+    font-family: 'Cinzel', serif;
+    color: var(--primary-color) !important;
+}
+
+[data-testid="stMetricLabel"] {
+    font-family: 'Josefin Sans', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Navigation / Sidebar */
+section[data-testid="stSidebar"] {
+    background-color: var(--card-bg) !important;
+    border-right: 1px solid rgba(212, 175, 55, 0.1);
+}
+
+/* Custom Card Effect */
+div.stMetric {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid rgba(212, 175, 55, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+div.stMetric:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+}
+
+/* Transitions */
+.stButton>button {
+    transition: all 0.2s ease;
+    border-radius: 5px;
+}

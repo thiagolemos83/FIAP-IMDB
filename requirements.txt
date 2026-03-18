@@ -1,0 +1,8 @@
+pymongo[srv]
+redis
+streamlit
+pandas
+plotly
+python-dotenv
+geopy
+faker

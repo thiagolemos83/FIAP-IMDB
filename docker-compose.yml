@@ -1,0 +1,35 @@
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb_radar
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    command: ["--replSet", "rs0", "--bind_ip_all"]
+
+  redis:
+    image: redis:latest
+    container_name: redis_radar
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  # The setup service initializes the MongoDB Replica Set
+  mongo-setup:
+    image: mongo:latest
+    depends_on:
+      - mongodb
+    restart: on-failure
+    command: >
+      bash -c "echo 'rs.initiate({_id: \"rs0\", members: [{_id: 0, host: \"mongodb:27017\"}]})' | mongosh --host mongodb:27017"
+
+  # We'll run our Python components outside or inside. 
+  # For the user to run easily, I'll provide the files to be run locally, 
+  # or I can add them as services if requested. 
+  # For now, let's keep it simple for the user to 'python src/xxx.py'.
+
+volumes:
+  mongo_data:
+  redis_data:
